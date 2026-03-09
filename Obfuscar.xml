@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Obfuscator>
+  <Var name="InPath" value="bin\publish" />
+  <Var name="OutPath" value="bin\publish\obfuscated" />
+  <Module file="bin\publish\Capto.dll">
+    <SkipModule>SkiaSharp.dll</SkipModule>
+    <SkipModule>Svg.Skia.dll</SkipModule>
+    <SkipModule>Svg.Model.dll</SkipModule>
+    <SkipModule>Svg.Custom.dll</SkipModule>
+    <SkipModule>ShimSkiaSharp.dll</SkipModule>
+    <SkipModule>HarfBuzzSharp.dll</SkipModule>
+    <SkipModule>SkiaSharp.HarfBuzz.dll</SkipModule>
+    <SkipModule>ExCSS.dll</SkipModule>
+  </Module>
+</Obfuscator>
