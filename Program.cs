@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using Capto.Utilities;
@@ -10,11 +11,22 @@ namespace Capto
         [DllImport("user32.dll")]
         private static extern bool SetProcessDPIAware();
 
+        private static Mutex? _instanceMutex;
+
         [STAThread]
         static void Main()
         {
             try
             {
+                bool createdNew;
+                _instanceMutex = new Mutex(true, "Capto_SingleInstance_Mutex", out createdNew);
+
+                if (!createdNew)
+                {
+                    MessageBox.Show("Capto 已在运行中，无法重复启动。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
                 Logger.Initialize();
 
                 // 设置DPI感知，确保应用程序能够正确处理高DPI显示
@@ -41,6 +53,8 @@ namespace Capto
             finally
             {
                 Logger.Shutdown();
+                _instanceMutex?.ReleaseMutex();
+                _instanceMutex?.Dispose();
             }
         }
     }

@@ -458,11 +458,22 @@ namespace Capto
                 
                 if (isFullScreen)
                 {
+                    
                     // 全屏截图时，工具条显示在屏幕顶部中央
                     if (_toolStripManager != null)
                     {
                         toolStripX = (screen.WorkingArea.Width - _toolStripManager.ToolStripPanel.Width) / 2;
                         toolStripY = 10; // 顶部留出一些边距
+                        
+                        // 检查顶部是否有足够空间
+                        if (toolStripY + _toolStripManager.ToolStripPanel.Height > screen.WorkingArea.Bottom)
+                        {
+                            Capto.Utilities.Logger.Warning($"[FullScreen] Insufficient top space! Toolstrip Height: {_toolStripManager.ToolStripPanel.Height}, Available Height: {screen.WorkingArea.Bottom - toolStripY}, toolStripY: {toolStripY}");
+                        }
+                        else
+                        {
+                            Capto.Utilities.Logger.Info($"[FullScreen] Toolstrip Position: ({toolStripX}, {toolStripY})");
+                        }
                     }
                     else
                     {
@@ -479,7 +490,25 @@ namespace Capto
                     // 检查工具条是否会超出屏幕底部，如果是则显示在截图区域上方
                     if (_toolStripManager != null && toolStripY + _toolStripManager.ToolStripPanel.Height > screen.WorkingArea.Bottom)
                     {
-                        toolStripY = _captureRect.Top - _toolStripManager.ToolStripPanel.Height; // 显示在截图区域上方
+                        // 底部空间不足，尝试显示在顶部
+                        int newToolStripY = _captureRect.Top - _toolStripManager.ToolStripPanel.Height;
+                        
+                        // 检查顶部是否有足够空间
+                        if (newToolStripY < screen.WorkingArea.Top)
+                        {
+                            toolStripY = newToolStripY+200;
+                            Capto.Utilities.Logger.Warning($"[Region] Both bottom and top space insufficient! Capture Area: ({_captureRect.Left}, {_captureRect.Top}, {_captureRect.Width}, {_captureRect.Height}), Toolstrip Height: {_toolStripManager.ToolStripPanel.Height}, Available Top Space: {screen.WorkingArea.Top - newToolStripY}, Available Bottom Space: {screen.WorkingArea.Bottom - toolStripY}, toolStripY: {toolStripY}");
+                        }
+                        else
+                        {
+                            toolStripY = newToolStripY;
+                            Capto.Utilities.Logger.Warning($"[Region] Bottom space insufficient, switching to top! Toolstrip Height: {_toolStripManager.ToolStripPanel.Height}, Available Bottom Space: {screen.WorkingArea.Bottom - toolStripY}, toolStripY: {toolStripY}");
+                        }
+                        
+                    }
+                    else
+                    {
+                        Capto.Utilities.Logger.Info($"[Region] Toolstrip Position: ({toolStripX}, {toolStripY})");
                     }
                     
                     // 确保工具条不会超出屏幕右侧
