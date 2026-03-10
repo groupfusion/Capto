@@ -815,8 +815,14 @@ namespace Capto
                     }
                 }
                 
-                // 添加水印
-                WatermarkHelper.AddWatermark(bitmap);
+                bool isLicenseValid = LicenseManager.ValidateAndLogLicense();
+                Logger.Info($"验证许可证: {isLicenseValid}");
+                if (!isLicenseValid)
+                {
+                    // 添加水印
+                    WatermarkHelper.AddWatermark(bitmap);
+                }
+                
                 
                 return bitmap;
             }
