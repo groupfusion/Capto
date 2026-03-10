@@ -5,7 +5,6 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using SkiaSharp;
 using Capto.Utilities;
 
 namespace Capto
@@ -171,18 +170,18 @@ namespace Capto
             ToolStrip.AutoSize = true;
             ToolStrip.ImageScalingSize = new Size(48, 48);
             // 创建工具按钮
-            PenButton = new ToolStripButton() { Checked = true, BackColor = Color.Transparent, Image = IconLoader.LoadSvgIcon("pencil.svg", SKColors.Black) };
-            RectangleButton = new ToolStripButton() { BackColor = Color.Transparent, Image = IconLoader.LoadSvgIcon("square.svg", SKColors.Black) };
-            CircleButton = new ToolStripButton() { BackColor = Color.Transparent, Image = IconLoader.LoadSvgIcon("circle.svg", SKColors.Black) };
-            ArrowButton = new ToolStripButton() { BackColor = Color.Transparent, Image = IconLoader.LoadSvgIcon("arrow-right.svg", SKColors.Black) };
-            BlurButton = new ToolStripButton() { Image = IconLoader.LoadSvgIcon("grid.svg", SKColors.Black) };
-            TextButton = new ToolStripButton() { BackColor = Color.Transparent,Image = IconLoader.LoadSvgIcon("A.svg", SKColors.Black) };
-            EraserButton = new ToolStripButton() { BackColor = Color.Transparent, Image = IconLoader.LoadSvgIcon("eraser.svg", SKColors.Black) };
+            PenButton = new ToolStripButton() { Checked = true, BackColor = Color.Transparent, Image = IconLoader.LoadIcon("pencil", Color.Black) };
+            RectangleButton = new ToolStripButton() { BackColor = Color.Transparent, Image = IconLoader.LoadIcon("square", Color.Black) };
+            CircleButton = new ToolStripButton() { BackColor = Color.Transparent, Image = IconLoader.LoadIcon("circle", Color.Black) };
+            ArrowButton = new ToolStripButton() { BackColor = Color.Transparent, Image = IconLoader.LoadIcon("arrow-right", Color.Black) };
+            BlurButton = new ToolStripButton() { Image = IconLoader.LoadIcon("grid", Color.Black) };
+            TextButton = new ToolStripButton() { BackColor = Color.Transparent,Image = IconLoader.LoadIcon("A", Color.Black) };
+            EraserButton = new ToolStripButton() { BackColor = Color.Transparent, Image = IconLoader.LoadIcon("eraser", Color.Black) };
             PenSizeComboBox = new ToolStripDropDownButton { Width = 80, BackColor = Color.FromArgb(220, 220, 220), ForeColor = Color.Black };
             ArrowStyleComboBox = new ToolStripDropDownButton { Width = 80, BackColor = Color.FromArgb(220, 220, 220), ForeColor = Color.Black };
             ColorComboBox = new ToolStripDropDownButton { Width = 80, BackColor = Color.FromArgb(60, 60, 60), ForeColor = Color.White };
-            SaveButton = new ToolStripButton() {  Image = IconLoader.LoadSvgIcon("download.svg", SKColors.Black) };
-            CopyButton = new ToolStripButton("完成") {  Image = IconLoader.LoadSvgIcon("check.svg", SKColors.Black),ForeColor = Color.Black };
+            SaveButton = new ToolStripButton() {  Image = IconLoader.LoadIcon("download", Color.Black) };
+            CopyButton = new ToolStripButton("完成") {  Image = IconLoader.LoadIcon("check", Color.Black),ForeColor = Color.Black };
             // 初始化画笔粗细下拉框
             InitializePenSizeComboBox();
             

@@ -446,30 +446,63 @@ namespace Capto
                     this.Controls.Add(_canvasTextBox);
                 }
                 
-                // 计算工具条的位置，显示在截图区域的下边
+                // 计算工具条的位置
                 Screen screen = Screen.FromPoint(_captureRect.Location);
-                int toolStripX = _captureRect.Left; // 与截图区域左对齐
-                int toolStripY = _captureRect.Bottom; // 截图区域底部
+                int toolStripX, toolStripY;
                 
-                // 检查工具条是否会超出屏幕底部，如果是则显示在截图区域上方
-                if (_toolStripManager != null && toolStripY + _toolStripManager.ToolStripPanel.Height > screen.WorkingArea.Bottom)
+                // 检查是否是全屏截图
+                bool isFullScreen = _captureRect.Top == 0 && 
+                                   _captureRect.Left == 0 && 
+                                   _captureRect.Width == screen.Bounds.Width && 
+                                   _captureRect.Height == screen.Bounds.Height;
+                
+                if (isFullScreen)
                 {
-                    toolStripY = _captureRect.Top - _toolStripManager.ToolStripPanel.Height; // 显示在截图区域上方
+                    // 全屏截图时，工具条显示在屏幕顶部中央
+                    if (_toolStripManager != null)
+                    {
+                        toolStripX = (screen.WorkingArea.Width - _toolStripManager.ToolStripPanel.Width) / 2;
+                        toolStripY = 10; // 顶部留出一些边距
+                    }
+                    else
+                    {
+                        toolStripX = 10;
+                        toolStripY = 10;
+                    }
                 }
-                
-                // 确保工具条不会超出屏幕右侧
-                if (_toolStripManager != null && toolStripX + _toolStripManager.ToolStripPanel.Width > screen.WorkingArea.Right)
+                else
                 {
-                    toolStripX = screen.WorkingArea.Right - _toolStripManager.ToolStripPanel.Width - 10;
-                }
-                
-                // 确保工具条不会超出屏幕左侧
-                if (toolStripX < 0)
-                {
-                    toolStripX = 10;
+                    // 非全屏截图时，工具条显示在截图区域的下边
+                    toolStripX = _captureRect.Left; // 与截图区域左对齐
+                    toolStripY = _captureRect.Bottom; // 截图区域底部
+                    
+                    // 检查工具条是否会超出屏幕底部，如果是则显示在截图区域上方
+                    if (_toolStripManager != null && toolStripY + _toolStripManager.ToolStripPanel.Height > screen.WorkingArea.Bottom)
+                    {
+                        toolStripY = _captureRect.Top - _toolStripManager.ToolStripPanel.Height; // 显示在截图区域上方
+                    }
+                    
+                    // 确保工具条不会超出屏幕右侧
+                    if (_toolStripManager != null && toolStripX + _toolStripManager.ToolStripPanel.Width > screen.WorkingArea.Right)
+                    {
+                        toolStripX = screen.WorkingArea.Right - _toolStripManager.ToolStripPanel.Width - 10;
+                    }
+                    
+                    // 确保工具条不会超出屏幕左侧
+                    if (toolStripX < 0)
+                    {
+                        toolStripX = 10;
+                    }
                 }
                 
                 _toolStripManager?.ShowToolStrip(new Point(toolStripX, toolStripY));
+                
+                // 确保工具条浮动在截图上方
+                if (_toolStripManager != null)
+                {
+                    _toolStripManager.ToolStripPanel.BringToFront();
+                    _toolStripManager.ToolStrip.BringToFront();
+                }
             }
         }
 

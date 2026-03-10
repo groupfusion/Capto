@@ -1,10 +1,9 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
-using SkiaSharp;
-using Svg.Skia;
 
 namespace Capto.Utilities
 {
@@ -12,13 +11,13 @@ namespace Capto.Utilities
     {
         private static readonly Assembly _assembly = typeof(IconLoader).Assembly;
         
-        public static Image LoadSvgIcon(string fileName, SKColor targetColor, int size = 48)
+        public static Image LoadIcon(string fileName, Color targetColor, int size = 48)
         {
             Image fallbackImage = CreateFallbackIcon(size, size);
 
             try
             {
-                string resourceName = $"Capto.resource.{fileName}";
+                string resourceName = $"Capto.resource.{fileName}.png";
                 
                 using var stream = _assembly.GetManifestResourceStream(resourceName);
                 if (stream == null)
@@ -27,34 +26,27 @@ namespace Capto.Utilities
                     return fallbackImage;
                 }
 
-                using var svg = new SKSvg();
-                var picture = svg.Load(stream);
-                if (picture == null)
+                var originalImage = Image.FromStream(stream);
+                
+                if (originalImage.Width == size && originalImage.Height == size)
                 {
-                    Console.WriteLine($"SVG icon {fileName} is empty or corrupted.");
-                    return fallbackImage;
+                    if (targetColor == Color.Black || targetColor.A == 0)
+                    {
+                        return originalImage;
+                    }
+                    
+                    return RecolorImage(originalImage, targetColor);
                 }
-
-                float scaleX = (float)size / picture.CullRect.Width;
-                float scaleY = (float)size / picture.CullRect.Height;
-                float scale = Math.Min(scaleX, scaleY);
-
-                using var skBitmap = new SKBitmap(size, size);
-                using var skCanvas = new SKCanvas(skBitmap);
-                skCanvas.Clear(SKColors.Transparent);
                 
-                skCanvas.Translate(size / 2f, size / 2f);
-                skCanvas.Scale(scale);
-                skCanvas.Translate(-picture.CullRect.Width / 2f, -picture.CullRect.Height / 2f);
+                var resizedImage = ResizeImage(originalImage, size, size);
+                originalImage.Dispose();
                 
-                using var paint = new SKPaint { IsAntialias = true, Color = targetColor };
-                skCanvas.DrawPicture(picture, paint);
-
-                using var memoryStream = new MemoryStream();
-                skBitmap.Encode(memoryStream, SKEncodedImageFormat.Png, 100);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                Image finalImage = Image.FromStream(memoryStream);
-                return finalImage;
+                if (targetColor == Color.Black || targetColor.A == 0)
+                {
+                    return resizedImage;
+                }
+                
+                return RecolorImage(resizedImage, targetColor);
             }
             catch (Exception ex)
             {
@@ -62,6 +54,56 @@ namespace Capto.Utilities
             }
 
             return fallbackImage;
+        }
+
+        private static Image ResizeImage(Image originalImage, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+            destImage.SetResolution(originalImage.HorizontalResolution, originalImage.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using var wrapMode = new ImageAttributes();
+                wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                graphics.DrawImage(originalImage, destRect, 0, 0, originalImage.Width, originalImage.Height, GraphicsUnit.Pixel, wrapMode);
+            }
+
+            return destImage;
+        }
+
+        private static Image RecolorImage(Image originalImage, Color targetColor)
+        {
+            var bitmap = new Bitmap(originalImage.Width, originalImage.Height);
+            bitmap.SetResolution(originalImage.HorizontalResolution, originalImage.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+
+                var colorMatrix = new ColorMatrix();
+                colorMatrix.Matrix00 = targetColor.R / 255f;
+                colorMatrix.Matrix11 = targetColor.G / 255f;
+                colorMatrix.Matrix22 = targetColor.B / 255f;
+                colorMatrix.Matrix33 = targetColor.A / 255f;
+
+                var attributes = new ImageAttributes();
+                attributes.SetColorMatrix(colorMatrix);
+
+                graphics.DrawImage(originalImage,
+                    new Rectangle(0, 0, originalImage.Width, originalImage.Height),
+                    0, 0, originalImage.Width, originalImage.Height,
+                    GraphicsUnit.Pixel, attributes);
+            }
+
+            return bitmap;
         }
 
         private static Image CreateFallbackIcon(int width, int height)
