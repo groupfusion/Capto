@@ -130,7 +130,7 @@ namespace Capto
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error capturing screen: {ex.Message}");
+                Capto.Utilities.Logger.Error($"Error capturing screen: {ex.Message}", ex);
                 // 如果捕获屏幕失败，创建一个默认的空白 bitmap
                 _screenBitmap = new Bitmap(100, 100);
                 using (var g = Graphics.FromImage(_screenBitmap))
@@ -779,17 +779,21 @@ namespace Capto
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine($"Error drawing object: {ex.Message}");
+                                Capto.Utilities.Logger.Error($"Error drawing object: {ex.Message}", ex);
                                 // 继续绘制其他对象
                             }
                         }
                     }
                 }
+                
+                // 添加水印
+                WatermarkHelper.AddWatermark(bitmap);
+                
                 return bitmap;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error creating capture image: {ex.Message}");
+                Capto.Utilities.Logger.Error($"Error creating capture image: {ex.Message}", ex);
                 return null;
             }
         }

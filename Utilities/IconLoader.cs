@@ -22,7 +22,7 @@ namespace Capto.Utilities
                 using var stream = _assembly.GetManifestResourceStream(resourceName);
                 if (stream == null)
                 {
-                    Console.WriteLine($"Embedded resource {resourceName} not found.");
+                    Capto.Utilities.Logger.Warning($"Embedded resource {resourceName} not found.");
                     return fallbackImage;
                 }
 
@@ -50,7 +50,7 @@ namespace Capto.Utilities
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading icon {fileName}: {ex.Message}");
+                Capto.Utilities.Logger.Error($"Error loading icon {fileName}: {ex.Message}", ex);
             }
 
             return fallbackImage;
