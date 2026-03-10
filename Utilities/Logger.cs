@@ -70,6 +70,16 @@ namespace Capto.Utilities
             _logger.Debug(message);
         }
         
+        public static void Debug(string message, params object[] args)
+        {
+            if (_logger == null)
+            {
+                Console.Error.WriteLine($"[DEBUG] {message}");
+                return;
+            }
+            _logger.Debug(message, args);
+        }
+        
         public static void Info(string message)
         {
             if (_logger == null)
@@ -80,6 +90,16 @@ namespace Capto.Utilities
             _logger.Information(message);
         }
         
+        public static void Info(string message, params object[] args)
+        {
+            if (_logger == null)
+            {
+                Console.Error.WriteLine($"[INFO] {message}");
+                return;
+            }
+            _logger.Information(message, args);
+        }
+        
         public static void Warning(string message)
         {
             if (_logger == null)
@@ -88,6 +108,16 @@ namespace Capto.Utilities
                 return;
             }
             _logger.Warning(message);
+        }
+        
+        public static void Warning(string message, params object[] args)
+        {
+            if (_logger == null)
+            {
+                Console.Error.WriteLine($"[WARN] {message}");
+                return;
+            }
+            _logger.Warning(message, args);
         }
         
         public static void Error(string message, Exception? ex = null)

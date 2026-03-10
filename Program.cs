@@ -29,6 +29,16 @@ namespace Capto
 
                 Logger.Initialize();
 
+                // 验证许可证
+                bool isLicenseValid = LicenseManager.ValidateAndLogLicense();
+                Logger.Info($"验证许可证: {isLicenseValid}");
+                if (!isLicenseValid)
+                {
+                    MessageBox.Show("许可证验证失败，软件即将退出。", "许可证错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Logger.Shutdown();
+                    return;
+                }
+
                 // 设置DPI感知，确保应用程序能够正确处理高DPI显示
                 if (Environment.OSVersion.Version.Major >= 6)
                 {

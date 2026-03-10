@@ -72,10 +72,10 @@ namespace Capto
             
             var licenseLabel = new Label
             {
-                Text = GetLicenseInfo(),
-                Font = new Font("Microsoft YaHei UI", 10),
+                Text = LicenseManager.GetLicenseDisplayInfo(),
+                Font = new Font("Microsoft YaHei UI", 9),
                 ForeColor = Color.FromArgb(96, 96, 96),
-                Location = new Point(20, 400),
+                Location = new Point(50, 450),
                 AutoSize = true
             };
            
@@ -84,9 +84,8 @@ namespace Capto
                 Text = SystemInfoHelper.GetDetailedSystemInfo(),
                 Font = new Font("Microsoft YaHei UI", 9),
                 ForeColor = Color.FromArgb(64, 64, 64),
-                Location = new Point(50, 120),
-                Size = new Size(450, 300),
-            
+                Location = new Point(50, 150),
+                Size = new Size(450, 260),
                 ReadOnly = true,
                 BorderStyle = BorderStyle.Fixed3D,
                 ScrollBars = RichTextBoxScrollBars.Vertical
@@ -103,7 +102,7 @@ namespace Capto
             
             var qrPicture = new PictureBox
             {
-                Location = new Point(550, 120),
+                Location = new Point(550, 150),
                 Size = new Size(200, 200),
                 SizeMode = PictureBoxSizeMode.StretchImage,
                 BorderStyle = BorderStyle.FixedSingle
@@ -117,14 +116,14 @@ namespace Capto
                 Text = "扫码加微信",
                 Font = new Font("Microsoft YaHei UI", 12, FontStyle.Bold),
                 ForeColor = Color.FromArgb(255, 255, 136, 0), // 橙色
-                Location = new Point(550, 330),
+                Location = new Point(550, 360),
                 AutoSize = true
             };
             
             var copyButton = new Button
             {
                 Text = "复制",
-                Location = new Point(500, 450),
+                Location = new Point(500, 500),
                 Size = new Size(100, 38),
                 FlatStyle = FlatStyle.Flat,
                 ForeColor = Color.FromArgb(64, 64, 64),
@@ -133,7 +132,7 @@ namespace Capto
             var closeButton = new Button
             {
                 Text = "确定",
-                Location = new Point(640, 450),
+                Location = new Point(640, 500),
                 Size = new Size(100, 40),
                 FlatStyle = FlatStyle.Flat,
                 ForeColor = Color.FromArgb(64, 64, 64),
@@ -241,27 +240,6 @@ namespace Capto
             
             return icon;
         }
-        
-        private string GetLicenseInfo()
-        {
-            try
-            {
-                var licensePath = System.IO.Path.Combine(System.Environment.CurrentDirectory, "license.lic");
-                if (System.IO.File.Exists(licensePath))
-                {
-                    var licenseKey = System.IO.File.ReadAllText(licensePath);
-                    var licenseInfo = Capto.Utilities.LicenseManager.GetLicenseInfo(licenseKey);
-                    if (licenseInfo != null)
-                    {
-                        return $"许可证到期日期: {licenseInfo.ExpirationDate.ToString("yyyy-MM-dd")}";
-                    }
-                }
-                return "未找到有效许可证";
-            }
-            catch
-            {
-                return "许可证信息获取失败";
-            }
-        }
+       
     }
 }
